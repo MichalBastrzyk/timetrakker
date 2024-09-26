@@ -5,8 +5,6 @@ import "./index.css"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <main className="grid place-items-center min-h-screen">
-      <TimeTrackerEnhanced />
-    </main>
+    <TimeTrackerEnhanced />
   </StrictMode>
 )

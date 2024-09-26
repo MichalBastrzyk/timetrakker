@@ -17,6 +17,7 @@ export function TimeTrackerEnhanced() {
   const [time, setTime] = useState(0)
   const [entries, setEntries] = useState<TimeEntry[]>([])
   const [startTime, setStartTime] = useState<Date | null>(null)
+  const [totalTime, setTotalTime] = useState(0)
 
   useEffect(() => {
     const storedEntries = localStorage.getItem("timeEntries")
@@ -28,12 +29,19 @@ export function TimeTrackerEnhanced() {
         return value
       })
       setEntries(parsedEntries)
+      const sum = parsedEntries.reduce(
+        (acc: number, entry: TimeEntry) => acc + entry.duration,
+        0
+      )
+      setTotalTime(sum)
     }
   }, [])
 
   useEffect(() => {
     if (entries.length > 0) {
       localStorage.setItem("timeEntries", JSON.stringify(entries))
+      const sum = entries.reduce((acc, entry) => acc + entry.duration, 0)
+      setTotalTime(sum)
     }
   }, [entries])
 
@@ -93,13 +101,13 @@ export function TimeTrackerEnhanced() {
   }
 
   return (
-    <Card className="w-full max-w-4xl mx-auto shadow-lg">
+    <Card className="w-full h-full shadow-lg flex flex-col">
       <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
         <CardTitle className="text-3xl font-bold text-center text-gray-800 dark:text-gray-200">
           Time Tracker
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="p-6 flex-grow flex flex-col">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div className="flex items-center justify-center md:justify-start space-x-4 mb-6 md:mb-0">
             <Clock className="w-12 h-12 text-gray-400" />
@@ -120,7 +128,12 @@ export function TimeTrackerEnhanced() {
             {isRunning ? "Stop" : "Start"}
           </Button>
         </div>
-        <ScrollArea className="h-[400px] w-full rounded-md border p-4 bg-gray-50 dark:bg-gray-800">
+        <div className="mb-6 text-center">
+          <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+            Łączny czas: {formatTime(totalTime)}
+          </span>
+        </div>
+        <ScrollArea className="flex-grow w-full rounded-md border p-4 bg-gray-50 dark:bg-gray-800">
           <AnimatePresence>
             {entries.map((entry, index) => (
               <motion.div
